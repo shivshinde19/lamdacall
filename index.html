@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EC2 Start / Stop Control</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+    }
+    .container {
+      width: 320px;
+      margin: 120px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    h3 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+    }
+    button {
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .start {
+      background: #28a745;
+      color: white;
+      border: none;
+    }
+    .stop {
+      background: #dc3545;
+      color: white;
+      border: none;
+    }
+    #message {
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h3>EC2 Control Panel</h3>
+
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+
+  <button class="start" onclick="sendAction('start')">Start Server</button>
+  <button class="stop" onclick="sendAction('stop')">Stop Server</button>
+
+  <div id="message"></div>
+</div>
+
+<script>
+const LAMBDA_URL = "https://xut6hifgwfrnw2bogeixc6furu0aydjx.lambda-url.us-east-1.on.aws/";
+
+function sendAction(action) {
+  document.getElementById("message").innerText = "Processing...";
+
+  fetch(LAMBDA_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username: document.getElementById("username").value,
+      password: document.getElementById("password").value,
+      action: action
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("message").innerText = data.message;
+  })
+  .catch(() => {
+    document.getElementById("message").innerText = "Request failed";
+  });
+}
+</script>
+
+</body>
+</html>
